@@ -32,7 +32,7 @@ export default defineConfig({
   },
   server: {
     host: '0.0.0.0',
-    port: 5000,
+    port: parseInt(process.env.PORT || '5000'),
     allowedHosts: true,
     proxy: {
       '/api': {
