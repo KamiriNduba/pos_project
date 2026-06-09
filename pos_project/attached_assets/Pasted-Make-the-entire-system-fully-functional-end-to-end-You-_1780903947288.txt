@@ -1,0 +1,84 @@
+Make the entire system fully functional end to end. You have complete freedom to modify any file in both frontend and backend.
+The Django server runs at http://127.0.0.1:8000. Auth is JWT — token stored in localStorage, sent as Authorization: Bearer <token>.
+User accounts to create:
+Create all 7 demo user accounts via a management command using the correct role values: super_admin, admin, manager, storekeeper, cashier, accountant, viewer. Password Demo1234! for all. Also create username superadmin with role super_admin and password Superadmin1234!.
+Tax:
+Make tax inclusive everywhere. 16% VAT should be built into displayed prices, not added on top. Update POS, receipts, invoices, and all price displays.
+Fix dead role reference:
+Remove or replace all inventory_clerk references in the User model and permissions with storekeeper.
+Inventory page:
+
+Add Export to Excel button that downloads current inventory data (product name, SKU, category, quantity, reorder level, supplier) as an Excel file
+Move the Reorder button to the main inventory list, not just the low stock tab — every product row should have one
+
+Products page:
+
+Display supplier name on the products list and product detail view
+
+POS cart:
+
+Add a text input for order notes in the cart section
+
+Supplier orders:
+
+Create a backend endpoint for supplier orders if it doesn't exist
+Wire the Suppliers page and Purchases page to real backend data
+
+Reports:
+
+Fetch all report data from the backend — no hardcoded data
+Sales report, inventory report, expense report, customer report should all show real data
+
+Frontend audit:
+
+Every page component must fetch real data from the backend using the correct API URLs
+No hardcoded data anywhere
+Every button must work — create, edit, delete, import, export, search, filter, paginate
+All forms must validate and show error messages
+Loading states and error states on every page
+Correct API URLs:
+
+Products: GET/POST /api/products/
+Customers: GET/POST /api/customers/
+Sales: GET/POST /api/sales/
+Users: GET /api/users/
+Inventory: GET /api/inventory/
+Reports: GET /api/reports/
+Notifications: GET /api/notifications/notifications/
+Payments: GET /api/payments/
+Returns: GET /api/returns/
+M-Pesa STK push: POST /api/payments/mpesa-payments/stk-push/
+Expenses: GET/POST /api/payments/expenses/
+Suppliers: GET/POST /api/products/suppliers/
+Purchase orders: GET/POST /api/purchases/ (create this endpoint if it doesn't exist)
+
+
+
+Dummy data:
+Create a management command python manage.py seed_data that populates:
+
+20 products across at least 5 categories with realistic Kenyan prices
+10 customers with valid Kenyan phone numbers
+15 completed sales with line items
+5 suppliers with contact details
+10 inventory stock movements
+5 expenses in different categories
+3 purchase orders
+
+Run python manage.py seed_data after creating it.
+Returns:
+
+Returns page must fetch real returns from backend and allow creating a return against a completed sale
+
+Notifications:
+
+Fix notification URL from /api/payment-notifications/ to /api/notifications/notifications/
+Notifications must appear and be dismissible
+
+changesmade.md:
+Write every single change made — file name, what changed, why — in a file called changesmade.md at the root of the repo.
+When done:
+
+Run python manage.py seed_data
+Run basic tests to verify login, register, products, customers, sales all work
+Commit and push all changes

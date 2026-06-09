@@ -1,0 +1,7 @@
+- [Sales model Decimal arithmetic](sales-decimal-fix.md) — Decimal fields divided by plain int `100` produce float; always use `Decimal('100')`.
+- [Notification ID collision](notification-id-collision.md) — notification_id uses `self.id or '000'` pre-save; two same-second creates collide; fixed with uuid4 suffix.
+- [Notification serializer frontend alignment](notification-serializer-alignment.md) — backend uses status/priority; frontend expects is_read/severity/action_url; serializer adds computed fields.
+- [ERP/POS Stack & Auth](erp-pos-stack.md) — Django 6 + DRF backend (port 8000), React 18 + Vite + TypeScript + Tailwind frontend (port 5000); JWT in localStorage as `pos-api-access-token`/`pos-api-refresh-token`.
+- [Management Commands Python version](management-commands.md) — Demo users and seed data require `/home/runner/workspace/.pythonlibs/bin/python3.12 manage.py ...`; system python is 3.13 but packages are installed for 3.12.
+- [Tax is inclusive 16% VAT](tax-inclusive.md) — All prices include VAT. Frontend formula: tax component = price × rate / (100 + rate), total = subtotal (no add-on). Backend uses same formula in calculate_totals().
+- [Product barcode unique constraint](product-barcode.md) — barcode field is unique=True blank=True with no null; seed data must pass a unique value (e.g. SKU) as barcode or IntegrityError on multiple empty strings.

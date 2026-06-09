@@ -1,0 +1,103 @@
+# customers/admin.py
+from django.contrib import admin
+from django.utils.html import format_html
+from .models import Customer
+
+
+@admin.register(Customer)
+class CustomerAdmin(admin.ModelAdmin):
+    """Django admin configuration for Customer model."""
+
+    list_display = [
+        'account_reference',
+        'name',
+        'phone',
+        'email',
+        'total_spent',
+        'pricing_tier',
+        'is_active',
+        'last_purchase_date_display',
+    ]
+
+    list_filter = [
+        'is_active',
+        'is_blacklisted',
+        'pricing_tier',
+        'created_at',
+    ]
+
+    search_fields = [
+        'account_reference',
+        'name',
+        'phone',
+        'email',
+    ]
+
+    readonly_fields = [
+        'account_reference',
+        'uuid',
+        'loyalty_records',
+        'total_spent',
+        'created_at',
+        'updated_at',
+        'get_loyalty_summary',
+    ]
+
+    fieldsets = (
+        ('Identification', {
+            'fields': ('account_reference', 'uuid', 'name', 'phone', 'email')
+        }),
+        ('Address', {
+            'fields': ('address_line1', 'address_line2', 'city', 'county', 'postal_code'),
+            'classes': ('collapse',)
+        }),
+        ('Business Information', {
+            'fields': ('tax_number', 'pricing_tier', 'notes'),
+        }),
+        ('Loyalty Program', {
+            'fields': ('loyalty_records', 'total_spent', 'get_loyalty_summary'),
+        }),
+        ('Status', {
+            'fields': ('is_active', 'is_blacklisted', 'last_purchase_date'),
+        }),
+        ('Timestamps', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )
+
+    actions = ['activate_customers', 'deactivate_customers', 'apply_vip_tier']
+
+    def last_purchase_date_display(self, obj):
+        if obj.last_purchase_date:
+            return obj.last_purchase_date.strftime('%Y-%m-%d %H:%M')
+        return 'No purchases'
+    last_purchase_date_display.short_description = 'Last Purchase'
+
+    def get_loyalty_summary(self, obj):
+        return format_html(
+            '<div style="background: #f0f0f0; padding: 10px; border-radius: 5px;">'
+            '<strong>Points:</strong> {}<br>'
+            '<strong>Total Spent:</strong> KES {:,}<br>'
+            '<strong>Discount:</strong> {}%<br>'
+            '</div>',
+            obj.loyalty_records,
+            obj.total_spent,
+            obj.get_discount_percentage()
+        )
+    get_loyalty_summary.short_description = 'Loyalty Summary'
+
+    def activate_customers(self, request, queryset):
+        updated = queryset.update(is_active=True)
+        self.message_user(request, f'{updated} customers activated.')
+    activate_customers.short_description = 'Activate selected customers'
+
+    def deactivate_customers(self, request, queryset):
+        updated = queryset.update(is_active=False)
+        self.message_user(request, f'{updated} customers deactivated.')
+    deactivate_customers.short_description = 'Deactivate selected customers'
+
+    def apply_vip_tier(self, request, queryset):
+        updated = queryset.update(pricing_tier='vip')
+        self.message_user(request, f'{updated} customers upgraded to VIP.')
+    apply_vip_tier.short_description = 'Upgrade to VIP tier'
